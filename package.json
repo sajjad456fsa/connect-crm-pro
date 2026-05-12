@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
+    "local": "./run-local.sh",
+    "docker:start": "docker compose up --build",
+    "docker:down": "docker compose down",
     "build": "echo Build complete",
     "migrate": "node server/migrate.js"
   },

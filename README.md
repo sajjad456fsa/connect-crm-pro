@@ -47,15 +47,68 @@ A fully custom self-hosted CRM web application built with Next.js, React, TypeSc
 
 ### Run locally
 
-Use Docker Compose for a complete local environment:
+There are two easy local options for testing your CRM:
 
-```bash
-docker compose up --build
-```
+1. **Docker Compose (recommended)**
 
-Then visit:
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:4000`
+   ```bash
+   docker compose up --build
+   ```
+
+   Or run the helper script:
+
+   ```bash
+   ./run-local.sh
+   ```
+
+   Or use npm:
+
+   ```bash
+   npm run local
+   ```
+
+   Or start directly with Docker Compose:
+
+   ```bash
+   npm run docker:start
+   ```
+
+   Then visit:
+   - Frontend: `http://localhost:3000`
+   - Backend: `http://localhost:4000`
+   - Health check: `http://localhost:4000/health`
+
+   This starts:
+   - PostgreSQL database
+   - Backend API server
+   - Frontend web app
+
+2. **Local Node.js development**
+
+   If you have Node.js installed locally, you can run the backend and frontend separately.
+
+   Backend:
+   ```bash
+   cd backend
+   cp .env.example .env
+   npm install
+   npm start
+   ```
+
+   Frontend:
+   ```bash
+   cd frontend
+   cp .env.example .env
+   npm install
+   npm run dev
+   ```
+
+   Then open:
+   - `http://localhost:3000`
+
+   Make sure the backend URL in `frontend/.env` is set to `http://localhost:4000/api`.
+
+For a complete local setup guide, see `LOCAL_TESTING.md`.
 
 ## Testing
 

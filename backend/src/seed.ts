@@ -4,7 +4,6 @@ import { hashPassword } from "./utils/hash";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create default admin user
   const adminPassword = await hashPassword("Sajjad786");
 
   const admin = await prisma.user.upsert({
@@ -21,14 +20,13 @@ async function main() {
 
   console.log("Admin user created:", admin.email);
 
-  // Create default roles if not exist
   const roles = [
-    { name: "SUPER_ADMIN", displayName: "Super Admin" },
-    { name: "ADMIN", displayName: "Admin" },
-    { name: "SALES_MANAGER", displayName: "Sales Manager" },
-    { name: "SALES_AGENT", displayName: "Sales Agent" },
-    { name: "SUPPORT_STAFF", displayName: "Support Staff" },
-  ];
+    { name: "SUPER_ADMIN" },
+    { name: "ADMIN" },
+    { name: "SALES_MANAGER" },
+    { name: "SALES_AGENT" },
+    { name: "SUPPORT_STAFF" },
+  ] as const;
 
   for (const role of roles) {
     await prisma.role.upsert({
@@ -40,7 +38,6 @@ async function main() {
 
   console.log("Roles seeded");
 
-  // Create sample sales agents
   const salesAgent1 = await prisma.user.upsert({
     where: { email: "john.sales@connectcrm.com" },
     update: {},
@@ -67,7 +64,6 @@ async function main() {
 
   console.log("Sample sales agents created");
 
-  // Create sample leads with advanced features
   const sampleLeads = [
     {
       leadId: "L001",
@@ -85,13 +81,13 @@ async function main() {
       address: "Business Bay, Dubai",
       notes: "Interested in enterprise CRM solution. Budget approved.",
       tags: ["Enterprise", "High-Value", "Tech"],
-      followUpDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
-      nextMeetingDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+      followUpDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      nextMeetingDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       assignedSalesPersonId: salesAgent1.id,
       assignedById: admin.id,
       leadAssignedDate: new Date(),
       leadProgressPercent: 60,
-      expectedClosingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      expectedClosingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       dealValue: 45000,
       conversionProbability: 75,
     },
@@ -111,12 +107,12 @@ async function main() {
       address: "Gran Via 123, Madrid",
       notes: "Needs marketing automation tools. Sent proposal last week.",
       tags: ["Marketing", "Automation"],
-      followUpDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
+      followUpDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
       assignedSalesPersonId: salesAgent2.id,
       assignedById: admin.id,
-      leadAssignedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      leadAssignedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
       leadProgressPercent: 70,
-      expectedClosingDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+      expectedClosingDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
       dealValue: 22000,
       conversionProbability: 60,
     },
@@ -136,12 +132,12 @@ async function main() {
       address: "Silicon Valley, CA",
       notes: "Hot lead from existing customer referral. Needs immediate follow-up.",
       tags: ["Startup", "Referral", "Hot Lead"],
-      followUpDate: new Date(), // Today
+      followUpDate: new Date(),
       assignedSalesPersonId: salesAgent1.id,
       assignedById: admin.id,
-      leadAssignedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // Yesterday
+      leadAssignedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
       leadProgressPercent: 10,
-      expectedClosingDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000), // 20 days from now
+      expectedClosingDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
       dealValue: 12000,
       conversionProbability: 40,
     },
@@ -161,13 +157,13 @@ async function main() {
       address: "Oxford Street 456, London",
       notes: "Met at London Fashion Week. Strong interest in retail CRM.",
       tags: ["Retail", "Fashion", "Trade Show"],
-      followUpDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-      nextMeetingDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      followUpDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      nextMeetingDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       assignedSalesPersonId: salesAgent2.id,
       assignedById: admin.id,
-      leadAssignedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+      leadAssignedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       leadProgressPercent: 85,
-      expectedClosingDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
+      expectedClosingDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
       dealValue: 32000,
       conversionProbability: 90,
     },
@@ -189,39 +185,40 @@ async function main() {
       tags: ["Manufacturing", "Lost"],
       assignedSalesPersonId: salesAgent1.id,
       assignedById: admin.id,
-      leadAssignedDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+      leadAssignedDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
       leadProgressPercent: 0,
       lostReason: "PRICE_TOO_HIGH",
       lostReasonNotes: "Competitor offered 20% lower price",
     },
-  ];
+  ] as const;
 
+  const createdLeads: Record<string, { id: string }> = {};
   for (const leadData of sampleLeads) {
-    await prisma.lead.upsert({
+    const lead = await prisma.lead.upsert({
       where: { leadId: leadData.leadId },
       update: {},
-      create: leadData,
+      create: leadData as any,
     });
+    createdLeads[leadData.leadId] = lead;
   }
 
   console.log("Sample leads created with advanced features");
 
-  // Create sample lead activities
   const activities = [
     {
-      leadId: "L001",
+      leadId: createdLeads["L001"].id,
       userId: salesAgent1.id,
       action: "lead_created",
       description: "Lead created from website inquiry",
     },
     {
-      leadId: "L001",
+      leadId: createdLeads["L001"].id,
       userId: admin.id,
       action: "lead_assigned",
       description: "Lead assigned to John Smith",
     },
     {
-      leadId: "L001",
+      leadId: createdLeads["L001"].id,
       userId: salesAgent1.id,
       action: "status_changed",
       description: "Status changed from NEW_LEAD to QUALIFIED",
@@ -229,27 +226,27 @@ async function main() {
       newValue: "QUALIFIED",
     },
     {
-      leadId: "L001",
+      leadId: createdLeads["L001"].id,
       userId: salesAgent1.id,
       action: "call_logged",
       description: "Called lead - discussed requirements and budget",
       metadata: { duration: 15, outcome: "positive" },
     },
     {
-      leadId: "L002",
+      leadId: createdLeads["L002"].id,
       userId: salesAgent2.id,
       action: "meeting_scheduled",
       description: "Meeting scheduled for product demo",
       metadata: { meetingType: "product_demo", attendees: 3 },
     },
     {
-      leadId: "L003",
+      leadId: createdLeads["L003"].id,
       userId: salesAgent1.id,
       action: "note_added",
       description: "Added urgent follow-up note",
     },
     {
-      leadId: "L004",
+      leadId: createdLeads["L004"].id,
       userId: salesAgent2.id,
       action: "proposal_sent",
       description: "Sent customized proposal via email",
@@ -264,6 +261,7 @@ async function main() {
   }
 
   console.log("Sample lead activities created");
+}
 
 main()
   .catch((e) => {

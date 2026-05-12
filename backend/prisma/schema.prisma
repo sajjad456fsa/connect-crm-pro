@@ -74,7 +74,6 @@ enum FileCategory {
 model Role {
   id        String   @id @default(cuid())
   name      RoleType @unique
-  users     User[]
   createdAt DateTime @default(now())
 }
 
@@ -135,6 +134,7 @@ model Lead {
 
   // Relations
   activities            LeadActivity[]
+  generalActivities     Activity[]     @relation("LeadGeneralActivities")
   files                 File[]
   tasks                 Task[]
   notifications         Notification[]
@@ -168,6 +168,7 @@ model Customer {
   documents    File[]
   tasks        Task[]
   notes        Note[]
+  messages     Message[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 }
@@ -186,6 +187,7 @@ model Task {
   lead         Lead?        @relation(fields: [leadId], references: [id])
   leadId       String?
   comments     String?
+  files        File[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
@@ -204,7 +206,7 @@ model Activity {
   message   String
   user      User?     @relation(fields: [userId], references: [id])
   userId    String?
-  lead      Lead?     @relation(fields: [leadId], references: [id])
+  lead      Lead?     @relation("LeadGeneralActivities", fields: [leadId], references: [id])
   leadId    String?
   createdAt DateTime  @default(now())
 }

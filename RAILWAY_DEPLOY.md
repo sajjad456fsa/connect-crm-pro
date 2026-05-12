@@ -50,20 +50,27 @@ NEXT_PUBLIC_APP_NAME=Connect CRM Pro
 ```
 
 ## 6. Deploy & Database Setup
-Railway will automatically:
-- Build and deploy using your docker-compose.yml
-- Create a PostgreSQL database
-- Run database migrations
+Railway will automatically build and deploy the app using the root `Dockerfile`.
 
-After deployment, run the seed script to create the admin user:
-```bash
-railway run npx prisma migrate deploy
-railway run npm run seed
-```
+The root server automatically initializes the PostgreSQL schema and seeds an admin user when it starts.
+
+If the database is connected, these tables will be created automatically:
+- `users`
+- `contacts`
+- `deals`
+
+### After deployment
+If Railway provides a PostgreSQL database, ensure `DATABASE_URL` is set in Railway variables.
+
+There is no separate Prisma migration step required for the root server app.
 
 ## 7. Access Your Live CRM
-- **Frontend**: `https://connect-crm-pro.up.railway.app`
-- **Backend API**: `https://connect-crm-pro.up.railway.app/api`
+- **App**: `https://connect-crm-pro.up.railway.app`
+- **Health check**: `https://connect-crm-pro.up.railway.app/health`
+
+### Default test login
+- **Email**: `admin@connectcrm.com`
+- **Password**: `Sajjad786`
 
 ## 8. Test Credentials
 Login with the admin account:
