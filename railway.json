@@ -1,9 +1,9 @@
 {
   "build": {
-    "buildCommand": "cd backend && npm install && npm run build && npx prisma generate"
+    "buildCommand": "npm install --prefix backend && npm run build --prefix backend && npx --prefix backend prisma generate"
   },
   "deploy": {
-    "startCommand": "cd backend && npx prisma migrate deploy && npm start",
+    "startCommand": "npx --prefix backend prisma migrate deploy && npm start --prefix backend",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
