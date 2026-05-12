@@ -16,11 +16,15 @@ enum RoleType {
 }
 
 enum LeadStatus {
-  NEW
+  NEW_LEAD
   CONTACTED
+  INTERESTED
   QUALIFIED
+  MEETING_SCHEDULED
   PROPOSAL_SENT
   NEGOTIATION
+  FOLLOW_UP
+  WAITING_RESPONSE
   WON
   LOST
 }
@@ -30,6 +34,27 @@ enum Priority {
   MEDIUM
   HIGH
   URGENT
+}
+
+enum LeadSource {
+  WEBSITE
+  SOCIAL_MEDIA
+  REFERRAL
+  COLD_CALL
+  EMAIL_CAMPAIGN
+  TRADE_SHOW
+  PARTNER
+  OTHER
+}
+
+enum LostReason {
+  PRICE_TOO_HIGH
+  COMPETITOR
+  TIMING_NOT_RIGHT
+  NO_NEED
+  BAD_TIMING
+  LOST_CONTACT
+  OTHER
 }
 
 enum TaskStatus {
@@ -65,33 +90,71 @@ model User {
   refreshToken      String?       @default(null)
   lastLogin         DateTime?
   createdAt         DateTime      @default(now())
-  leads             Lead[]        @relation("AssignedLeads")
+
+  // Relations
+  assignedLeads     Lead[]        @relation("AssignedLeads")
+  leadsAssignedBy   Lead[]        @relation("LeadAssignedBy")
   tasks             Task[]        @relation("AssignedTasks")
   messages          Message[]
   activities        Activity[]
+  leadActivities    LeadActivity[]
   notifications     Notification[]
 }
 
 model Lead {
-  id             String       @id @default(cuid())
-  fullName       String
-  company        String?
-  email          String
-  phone          String?
-  whatsapp       String?
-  source         String?
-  status         LeadStatus   @default(NEW)
-  priority       Priority     @default(MEDIUM)
-  budget         Float?        @default(0)
-  notes          String?
-  assignedStaff  User?        @relation("AssignedLeads", fields: [assignedStaffId], references: [id])
-  assignedStaffId String?
-  followUpDate   DateTime?
-  tags           String[]      @default([])
-  activities     Activity[]
-  files          File[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                    String          @id @default(cuid())
+  leadId                String          @unique @default(cuid())
+  fullName              String
+  companyName           String?
+  email                 String
+  phone                 String?
+  whatsapp              String?
+  leadSource            LeadSource?
+  status                LeadStatus      @default(NEW_LEAD)
+  priority              Priority        @default(MEDIUM)
+  budgetValue           Float?          @default(0)
+  country               String?
+  city                  String?
+  address               String?
+  notes                 String?
+  tags                  String[]        @default([])
+  followUpDate          DateTime?
+  nextMeetingDate       DateTime?
+  assignedSalesPerson   User?           @relation("AssignedLeads", fields: [assignedSalesPersonId], references: [id])
+  assignedSalesPersonId String?
+  assignedBy            User?           @relation("LeadAssignedBy", fields: [assignedById], references: [id])
+  assignedById          String?
+  leadAssignedDate      DateTime?
+  lastUpdatedDate       DateTime        @updatedAt
+  leadProgressPercent   Int             @default(0)
+  expectedClosingDate   DateTime?
+  dealValue             Float?          @default(0)
+  conversionProbability Int?            @default(0)
+  lostReason            LostReason?
+  lostReasonNotes       String?
+
+  // Relations
+  activities            LeadActivity[]
+  files                 File[]
+  tasks                 Task[]
+  notifications         Notification[]
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+}
+
+model LeadActivity {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  action      String   // e.g., "created", "assigned", "status_changed", "note_added", "call_logged", etc.
+  description String
+  oldValue    String?
+  newValue    String?
+  metadata    Json?    // Additional data like call duration, email subject, etc.
+  createdAt   DateTime @default(now())
 }
 
 model Customer {
@@ -146,14 +209,34 @@ model Activity {
   createdAt DateTime  @default(now())
 }
 
+enum NotificationType {
+  LEAD_ASSIGNED
+  LEAD_UPDATED
+  FOLLOW_UP_DUE
+  LEAD_WON
+  LEAD_LOST
+  HIGH_PRIORITY_LEAD
+  SALES_INACTIVE
+  BOSS_COMMENT
+  STATUS_CHANGED
+  MEETING_SCHEDULED
+  PROPOSAL_SENT
+  GENERAL
+}
+
 model Notification {
-  id        String    @id @default(cuid())
+  id        String            @id @default(cuid())
+  type      NotificationType  @default(GENERAL)
   title     String
   body      String
-  user      User?     @relation(fields: [userId], references: [id])
+  user      User?             @relation(fields: [userId], references: [id])
   userId    String?
-  read      Boolean   @default(false)
-  createdAt DateTime  @default(now())
+  lead      Lead?             @relation(fields: [leadId], references: [id])
+  leadId    String?
+  read      Boolean           @default(false)
+  priority  Priority          @default(MEDIUM)
+  metadata  Json?             // Additional data for the notification
+  createdAt DateTime          @default(now())
 }
 
 model File {
